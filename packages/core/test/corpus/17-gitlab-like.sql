@@ -1,0 +1,14 @@
+CREATE TABLE namespaces (id bigint NOT NULL, name varchar(255) NOT NULL, path varchar(255) NOT NULL, owner_id bigint, parent_id bigint, visibility_level integer DEFAULT 20 NOT NULL CHECK (visibility_level IN (0, 10, 20)), created_at timestamp without time zone, PRIMARY KEY (id));
+CREATE TABLE users (id bigint NOT NULL, username varchar(255), email varchar(255) DEFAULT ''::character varying NOT NULL, state varchar(255), admin boolean DEFAULT false NOT NULL, sign_in_count integer DEFAULT 0, created_at timestamp without time zone, PRIMARY KEY (id));
+CREATE TABLE projects (id bigint NOT NULL, name varchar(255), path varchar(255), description text, namespace_id bigint NOT NULL, creator_id bigint, star_count integer DEFAULT 0 NOT NULL, archived boolean DEFAULT false NOT NULL, created_at timestamp without time zone, PRIMARY KEY (id));
+CREATE TABLE merge_requests (id bigint NOT NULL, target_project_id bigint NOT NULL, source_project_id bigint, author_id bigint, title varchar(255), description text, state_id smallint DEFAULT 1 NOT NULL CHECK (state_id BETWEEN 1 AND 4), iid integer, created_at timestamp without time zone, PRIMARY KEY (id), UNIQUE (target_project_id, iid));
+CREATE TABLE issues (id bigint NOT NULL, project_id bigint, author_id bigint, title varchar(255), description text, state_id smallint DEFAULT 1 NOT NULL, iid integer, weight integer, due_date date, created_at timestamp without time zone, PRIMARY KEY (id), UNIQUE (project_id, iid));
+ALTER TABLE ONLY namespaces ADD CONSTRAINT fk_namespaces_owner FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE;
+ALTER TABLE ONLY namespaces ADD CONSTRAINT fk_namespaces_parent FOREIGN KEY (parent_id) REFERENCES namespaces (id) ON DELETE CASCADE;
+ALTER TABLE ONLY projects ADD CONSTRAINT fk_projects_namespace FOREIGN KEY (namespace_id) REFERENCES namespaces (id) ON DELETE CASCADE;
+ALTER TABLE ONLY projects ADD CONSTRAINT fk_projects_creator FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE SET NULL;
+ALTER TABLE ONLY merge_requests ADD CONSTRAINT fk_mr_target FOREIGN KEY (target_project_id) REFERENCES projects (id) ON DELETE CASCADE;
+ALTER TABLE ONLY merge_requests ADD CONSTRAINT fk_mr_source FOREIGN KEY (source_project_id) REFERENCES projects (id) ON DELETE SET NULL;
+ALTER TABLE ONLY merge_requests ADD CONSTRAINT fk_mr_author FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE SET NULL;
+ALTER TABLE ONLY issues ADD CONSTRAINT fk_issues_project FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE;
+ALTER TABLE ONLY issues ADD CONSTRAINT fk_issues_author FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE SET NULL;

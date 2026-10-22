@@ -1,0 +1,5 @@
+CREATE TABLE airports (code char(3) PRIMARY KEY, name text NOT NULL, city text NOT NULL, country char(2) NOT NULL, latitude numeric(8,5), longitude numeric(8,5));
+CREATE TABLE aircraft (id serial PRIMARY KEY, registration varchar(8) NOT NULL UNIQUE, model text NOT NULL, seats smallint NOT NULL CHECK (seats > 0));
+CREATE TABLE flights (id bigserial PRIMARY KEY, flight_no varchar(6) NOT NULL, origin char(3) NOT NULL REFERENCES airports (code), destination char(3) NOT NULL REFERENCES airports (code), departs_at timestamptz NOT NULL, arrives_at timestamptz NOT NULL, aircraft_id integer REFERENCES aircraft (id), UNIQUE (flight_no, departs_at));
+CREATE TABLE passengers (id bigserial PRIMARY KEY, passport_no varchar(12) NOT NULL UNIQUE, full_name text NOT NULL, email text);
+CREATE TABLE bookings (id bigserial PRIMARY KEY, flight_id bigint NOT NULL REFERENCES flights (id), passenger_id bigint NOT NULL REFERENCES passengers (id), seat varchar(4) NOT NULL, fare numeric(9,2) NOT NULL CHECK (fare >= 0), booked_at timestamptz NOT NULL, UNIQUE (flight_id, seat), UNIQUE (flight_id, passenger_id));

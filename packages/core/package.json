@@ -1,0 +1,62 @@
+{
+  "name": "@postseed/core",
+  "version": "0.1.0",
+  "description": "Browser-safe engine for Postseed: schema IR, DDL parser, FK-aware planner, deterministic generators and SQL/JSON/CSV writers.",
+  "license": "MIT",
+  "type": "module",
+  "author": {
+    "name": "Sagar Pinninti",
+    "url": "https://github.com/isagarpinninti"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isagarpinninti/postseed.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/isagarpinninti/postseed#readme",
+  "bugs": {
+    "url": "https://github.com/isagarpinninti/postseed/issues"
+  },
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "seed",
+    "fake-data",
+    "test-data",
+    "fixtures",
+    "faker",
+    "deterministic"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "bench": "POSTSEED_PERF=1 vitest run test/perf.test.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "10.6.0",
+    "pgsql-ast-parser": "^12.0.2"
+  },
+  "devDependencies": {
+    "tsup": "^9.0.0"
+  }
+}

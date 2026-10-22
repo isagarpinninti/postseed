@@ -1,0 +1,75 @@
+name: Release launchers
+# The PyPI and RubyGems packages bundle the same CLI as the npm package and run it with Node.
+#   git tag python-v0.1.0 && git push origin python-v0.1.0
+#   git tag ruby-v0.1.0   && git push origin ruby-v0.1.0
+on:
+  push:
+    tags: ["python-v*", "ruby-v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    if: startsWith(github.ref_name, 'python-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm bundle:launchers
+      - name: Tag must match the version in pyproject.toml
+        run: |
+          version=$(python -c "import tomllib;print(tomllib.load(open('wrappers/python/pyproject.toml','rb'))['project']['version'])")
+          [ "python-v$version" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+      - run: PYTHONPATH=wrappers/python/src python -m unittest discover -s wrappers/python/tests
+      - run: python -m pip install build twine
+      - run: python -m build
+        working-directory: wrappers/python
+      - run: python -m twine check dist/*
+        working-directory: wrappers/python
+      - run: python -m twine upload --skip-existing dist/*
+        working-directory: wrappers/python
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+  ruby:
+    if: startsWith(github.ref_name, 'ruby-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm bundle:launchers
+      - name: Tag must match the gemspec
+        run: |
+          version=$(ruby -e 'puts Gem::Specification.load("postseed.gemspec").version')
+          [ "ruby-v$version" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+        working-directory: wrappers/ruby
+      - run: ruby test/postseed_test.rb
+        working-directory: wrappers/ruby
+      - run: gem build postseed.gemspec
+        working-directory: wrappers/ruby
+      - run: gem push postseed-*.gem
+        working-directory: wrappers/ruby
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}

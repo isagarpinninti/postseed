@@ -1,0 +1,40 @@
+@import "@postseed/studio/theme.css";
+@source "../";
+@source "../../../../packages/studio/src";
+
+/* The website uses the system font stack: no web font to download before the headline can paint. Studio bundles Inter. */
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html { scroll-behavior: smooth; }
+.hero-glow {
+  background:
+    radial-gradient(60rem 28rem at 50% -8rem, color-mix(in srgb, var(--ink) 9%, transparent), transparent 70%),
+    linear-gradient(to bottom, transparent, var(--bg) 92%);
+}
+.grid-dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at 50% 0, #000 20%, transparent 70%);
+}
+.prose-docs h1 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 650; letter-spacing: -0.02em; margin: 0 0 1rem; }
+.prose-docs h2 { font-size: 1.25rem; font-weight: 620; letter-spacing: -0.01em; margin: 2.25rem 0 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+.prose-docs h3 { font-size: 1.0625rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+.prose-docs p, .prose-docs li { color: var(--muted); line-height: 1.7; }
+.prose-docs p { margin: 0.75rem 0; }
+.prose-docs ul { list-style: disc; padding-left: 1.4rem; margin: 0.75rem 0; }
+.prose-docs ol { list-style: decimal; padding-left: 1.4rem; margin: 0.75rem 0; }
+.prose-docs li { margin: 0.3rem 0; }
+.prose-docs a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--faint); }
+.prose-docs a:hover { text-decoration-color: var(--ink); }
+.prose-docs strong { color: var(--ink); font-weight: 600; }
+.prose-docs code { font-family: var(--font-mono); font-size: 0.85em; background: var(--raised); border: 1px solid var(--line); border-radius: 5px; padding: 0.1em 0.35em; color: var(--ink); }
+.prose-docs pre { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 1rem 1.1rem; overflow-x: auto; margin: 1rem 0; }
+.prose-docs pre code { background: none; border: none; padding: 0; font-size: 0.8125rem; line-height: 1.65; color: var(--muted); }
+.prose-docs .table-scroll { overflow-x: auto; margin: 1rem 0; }
+.prose-docs table { width: 100%; min-width: max-content; border-collapse: collapse; font-size: 0.875rem; }
+.prose-docs th { text-align: left; font-weight: 600; color: var(--ink); padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+.prose-docs td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: top; }
+.prose-docs td code { white-space: nowrap; }

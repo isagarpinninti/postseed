@@ -1,0 +1,78 @@
+{
+  "name": "postseed",
+  "version": "0.1.0",
+  "description": "Realistic, relationship-correct seed data for PostgreSQL. Local-first and deterministic: a Studio web app, a CLI and a library.",
+  "license": "MIT",
+  "type": "module",
+  "author": {
+    "name": "Sagar Pinninti",
+    "url": "https://github.com/isagarpinninti"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isagarpinninti/postseed.git",
+    "directory": "packages/postseed"
+  },
+  "homepage": "https://github.com/isagarpinninti/postseed#readme",
+  "bugs": {
+    "url": "https://github.com/isagarpinninti/postseed/issues"
+  },
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "seed",
+    "seed-data",
+    "fake-data",
+    "test-data",
+    "fixtures",
+    "faker",
+    "deterministic",
+    "cli",
+    "database"
+  ],
+  "bin": {
+    "postseed": "./dist/cli.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "studio-dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup && node scripts/copy-studio.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "@postseed/core": "workspace:*",
+    "@postseed/pg": "workspace:*",
+    "fflate": "^0.8.3",
+    "hono": "^4.13.13",
+    "jiti": "^2.7.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@postseed/studio": "workspace:*",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1",
+    "tsup": "^9.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+CREATE TYPE appointment_state AS ENUM ('booked', 'completed', 'no_show', 'cancelled');
+CREATE TABLE clinics (id smallint PRIMARY KEY, name text NOT NULL, city text, timezone text NOT NULL DEFAULT 'UTC');
+CREATE TABLE patients (clinic_id smallint NOT NULL REFERENCES clinics (id), mrn varchar(16) NOT NULL, first_name text NOT NULL, last_name text NOT NULL, date_of_birth date NOT NULL, phone varchar(24), PRIMARY KEY (clinic_id, mrn));
+CREATE TABLE clinicians (id serial PRIMARY KEY, clinic_id smallint NOT NULL REFERENCES clinics (id), full_name text NOT NULL, specialty text, license_no varchar(20) NOT NULL UNIQUE);
+CREATE TABLE appointments (id bigserial PRIMARY KEY, clinic_id smallint NOT NULL, mrn varchar(16) NOT NULL, clinician_id integer NOT NULL REFERENCES clinicians (id), starts_at timestamptz NOT NULL, ends_at timestamptz NOT NULL, state appointment_state NOT NULL DEFAULT 'booked', notes text, FOREIGN KEY (clinic_id, mrn) REFERENCES patients (clinic_id, mrn), CHECK (ends_at >= starts_at));
+CREATE TABLE prescriptions (id bigserial PRIMARY KEY, appointment_id bigint NOT NULL REFERENCES appointments (id) ON DELETE CASCADE, drug text NOT NULL, dose_mg numeric(7,2) NOT NULL CHECK (dose_mg > 0), refills smallint NOT NULL DEFAULT 0 CHECK (refills BETWEEN 0 AND 12));

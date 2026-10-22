@@ -1,0 +1,16 @@
+BEGIN;
+CREATE TABLE "django_content_type" ("id" serial NOT NULL PRIMARY KEY, "app_label" varchar(100) NOT NULL, "model" varchar(100) NOT NULL);
+ALTER TABLE "django_content_type" ADD CONSTRAINT "django_content_type_app_label_model_76bd3d3b_uniq" UNIQUE ("app_label", "model");
+CREATE TABLE "auth_user" ("id" serial NOT NULL PRIMARY KEY, "password" varchar(128) NOT NULL, "last_login" timestamp with time zone NULL, "is_superuser" boolean NOT NULL, "username" varchar(150) NOT NULL UNIQUE, "first_name" varchar(150) NOT NULL, "last_name" varchar(150) NOT NULL, "email" varchar(254) NOT NULL, "is_staff" boolean NOT NULL, "is_active" boolean NOT NULL, "date_joined" timestamp with time zone NOT NULL);
+CREATE TABLE "shop_category" ("id" bigserial NOT NULL PRIMARY KEY, "name" varchar(200) NOT NULL, "slug" varchar(50) NOT NULL UNIQUE, "parent_id" bigint NULL);
+ALTER TABLE "shop_category" ADD CONSTRAINT "shop_category_parent_id_5aab_fk_shop_category_id" FOREIGN KEY ("parent_id") REFERENCES "shop_category" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE TABLE "shop_product" ("id" bigserial NOT NULL PRIMARY KEY, "name" varchar(255) NOT NULL, "price" numeric(8, 2) NOT NULL, "stock" integer NOT NULL CHECK ("stock" >= 0), "available" boolean NOT NULL, "category_id" bigint NOT NULL, "created" timestamp with time zone NOT NULL);
+ALTER TABLE "shop_product" ADD CONSTRAINT "shop_product_category_id_fk_shop_category_id" FOREIGN KEY ("category_id") REFERENCES "shop_category" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE TABLE "shop_order" ("id" bigserial NOT NULL PRIMARY KEY, "user_id" integer NOT NULL, "created" timestamp with time zone NOT NULL, "paid" boolean NOT NULL, "address" varchar(250) NOT NULL, "city" varchar(100) NOT NULL, "postal_code" varchar(20) NOT NULL);
+ALTER TABLE "shop_order" ADD CONSTRAINT "shop_order_user_id_fk_auth_user_id" FOREIGN KEY ("user_id") REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE TABLE "shop_orderitem" ("id" bigserial NOT NULL PRIMARY KEY, "price" numeric(10, 2) NOT NULL, "quantity" integer NOT NULL CHECK ("quantity" >= 0), "order_id" bigint NOT NULL, "product_id" bigint NOT NULL);
+ALTER TABLE "shop_orderitem" ADD CONSTRAINT "shop_orderitem_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "shop_order" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "shop_orderitem" ADD CONSTRAINT "shop_orderitem_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "shop_product" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "shop_category_slug_like" ON "shop_category" ("slug" varchar_pattern_ops);
+CREATE INDEX "shop_product_category_id" ON "shop_product" ("category_id");
+COMMIT;

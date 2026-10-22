@@ -1,0 +1,4 @@
+CREATE TABLE sites (id integer PRIMARY KEY, name text NOT NULL, location_ip inet, installed_at date);
+CREATE TABLE sensors (id bigint PRIMARY KEY, site_id integer NOT NULL REFERENCES sites (id), kind varchar(20) NOT NULL, firmware varchar(12), mac macaddr UNIQUE, calibration bytea, sample_interval interval NOT NULL DEFAULT '1 minute');
+CREATE TABLE readings (sensor_id bigint NOT NULL REFERENCES sensors (id), read_at timestamp without time zone NOT NULL, value double precision NOT NULL, quality smallint NOT NULL DEFAULT 100 CHECK (quality BETWEEN 0 AND 100), PRIMARY KEY (sensor_id, read_at));
+CREATE TABLE alerts (id bigserial PRIMARY KEY, sensor_id bigint NOT NULL REFERENCES sensors (id), raised_at timestamptz NOT NULL, severity text NOT NULL CHECK (severity IN ('info', 'warning', 'critical')), cleared_at timestamptz, details jsonb);

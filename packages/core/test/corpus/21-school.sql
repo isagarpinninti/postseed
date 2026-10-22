@@ -1,0 +1,5 @@
+CREATE TABLE students (id serial PRIMARY KEY, student_no char(8) NOT NULL UNIQUE, name text NOT NULL, email text NOT NULL UNIQUE, enrolled_on date NOT NULL, gpa numeric(3,2) CHECK (gpa BETWEEN 0 AND 4));
+CREATE TABLE teachers (id serial PRIMARY KEY, name text NOT NULL, department text NOT NULL, email text UNIQUE);
+CREATE TABLE courses (id serial PRIMARY KEY, code varchar(10) NOT NULL UNIQUE, title text NOT NULL, credits smallint NOT NULL CHECK (credits BETWEEN 1 AND 6), teacher_id integer REFERENCES teachers (id));
+CREATE TABLE enrollments (student_id integer NOT NULL REFERENCES students (id) ON DELETE CASCADE, course_id integer NOT NULL REFERENCES courses (id) ON DELETE CASCADE, term varchar(8) NOT NULL, grade char(1) CHECK (grade IN ('A', 'B', 'C', 'D', 'F')), PRIMARY KEY (student_id, course_id, term));
+CREATE TABLE prerequisites (course_id integer NOT NULL REFERENCES courses (id), requires_id integer NOT NULL REFERENCES courses (id), PRIMARY KEY (course_id, requires_id), CHECK (course_id <> requires_id));

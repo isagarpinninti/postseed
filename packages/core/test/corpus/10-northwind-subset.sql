@@ -1,0 +1,14 @@
+CREATE TABLE categories (category_id smallint NOT NULL, category_name character varying(15) NOT NULL, description text, picture bytea, CONSTRAINT pk_categories PRIMARY KEY (category_id));
+CREATE TABLE customers (customer_id bpchar NOT NULL, company_name character varying(40) NOT NULL, contact_name character varying(30), contact_title character varying(30), address character varying(60), city character varying(15), region character varying(15), postal_code character varying(10), country character varying(15), phone character varying(24), fax character varying(24), CONSTRAINT pk_customers PRIMARY KEY (customer_id));
+CREATE TABLE employees (employee_id smallint NOT NULL, last_name character varying(20) NOT NULL, first_name character varying(10) NOT NULL, title character varying(30), birth_date date, hire_date date, reports_to smallint, CONSTRAINT pk_employees PRIMARY KEY (employee_id));
+CREATE TABLE suppliers (supplier_id smallint NOT NULL, company_name character varying(40) NOT NULL, contact_name character varying(30), country character varying(15), phone character varying(24), CONSTRAINT pk_suppliers PRIMARY KEY (supplier_id));
+CREATE TABLE products (product_id smallint NOT NULL, product_name character varying(40) NOT NULL, supplier_id smallint, category_id smallint, quantity_per_unit character varying(20), unit_price real, units_in_stock smallint, units_on_order smallint, reorder_level smallint, discontinued integer NOT NULL, CONSTRAINT pk_products PRIMARY KEY (product_id));
+CREATE TABLE orders (order_id smallint NOT NULL, customer_id bpchar, employee_id smallint, order_date date, required_date date, shipped_date date, freight real, ship_name character varying(40), ship_city character varying(15), ship_country character varying(15), CONSTRAINT pk_orders PRIMARY KEY (order_id));
+CREATE TABLE order_details (order_id smallint NOT NULL, product_id smallint NOT NULL, unit_price real NOT NULL, quantity smallint NOT NULL, discount real NOT NULL, CONSTRAINT pk_order_details PRIMARY KEY (order_id, product_id));
+ALTER TABLE ONLY orders ADD CONSTRAINT fk_orders_customers FOREIGN KEY (customer_id) REFERENCES customers;
+ALTER TABLE ONLY orders ADD CONSTRAINT fk_orders_employees FOREIGN KEY (employee_id) REFERENCES employees;
+ALTER TABLE ONLY order_details ADD CONSTRAINT fk_order_details_products FOREIGN KEY (product_id) REFERENCES products;
+ALTER TABLE ONLY order_details ADD CONSTRAINT fk_order_details_orders FOREIGN KEY (order_id) REFERENCES orders;
+ALTER TABLE ONLY products ADD CONSTRAINT fk_products_categories FOREIGN KEY (category_id) REFERENCES categories;
+ALTER TABLE ONLY products ADD CONSTRAINT fk_products_suppliers FOREIGN KEY (supplier_id) REFERENCES suppliers;
+ALTER TABLE ONLY employees ADD CONSTRAINT fk_employees_employees FOREIGN KEY (reports_to) REFERENCES employees;

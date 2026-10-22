@@ -1,0 +1,12 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE TYPE "public"."user_role_enum" AS ENUM('admin', 'editor', 'viewer');
+CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "email" character varying NOT NULL, "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "role" "public"."user_role_enum" NOT NULL DEFAULT 'viewer', "isActive" boolean NOT NULL DEFAULT true, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"));
+CREATE TABLE "project" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(120) NOT NULL, "description" text, "ownerId" uuid, CONSTRAINT "PK_4d68b1358bb5b766d3e78f32f57" PRIMARY KEY ("id"));
+CREATE TABLE "issue" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "priority" integer NOT NULL DEFAULT '3', "estimate" numeric(5,1), "projectId" uuid NOT NULL, "assigneeId" uuid, CONSTRAINT "PK_f80e086c249b9f3f3ff2fd321b7" PRIMARY KEY ("id"));
+CREATE TABLE "project_members_user" ("projectId" uuid NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "PK_pm" PRIMARY KEY ("projectId", "userId"));
+CREATE INDEX "IDX_pm_project" ON "project_members_user" ("projectId");
+ALTER TABLE "project" ADD CONSTRAINT "FK_owner" FOREIGN KEY ("ownerId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+ALTER TABLE "issue" ADD CONSTRAINT "FK_project" FOREIGN KEY ("projectId") REFERENCES "project"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "issue" ADD CONSTRAINT "FK_assignee" FOREIGN KEY ("assigneeId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+ALTER TABLE "project_members_user" ADD CONSTRAINT "FK_pm_project" FOREIGN KEY ("projectId") REFERENCES "project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "project_members_user" ADD CONSTRAINT "FK_pm_user" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

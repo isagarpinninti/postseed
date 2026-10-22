@@ -1,0 +1,15 @@
+create table "users" ("id" bigserial primary key not null, "name" varchar(255) not null, "email" varchar(255) not null, "email_verified_at" timestamp(0) without time zone null, "password" varchar(255) not null, "remember_token" varchar(100) null, "created_at" timestamp(0) without time zone null, "updated_at" timestamp(0) without time zone null);
+alter table "users" add constraint "users_email_unique" unique ("email");
+create table "categories" ("id" bigserial primary key not null, "name" varchar(255) not null, "slug" varchar(255) not null, "created_at" timestamp(0) without time zone null, "updated_at" timestamp(0) without time zone null);
+alter table "categories" add constraint "categories_slug_unique" unique ("slug");
+create table "articles" ("id" bigserial primary key not null, "user_id" bigint not null, "category_id" bigint null, "title" varchar(255) not null, "slug" varchar(255) not null, "body" text not null, "meta" jsonb null, "views" integer not null default '0', "published_at" timestamp(0) without time zone null, "created_at" timestamp(0) without time zone null, "updated_at" timestamp(0) without time zone null, "deleted_at" timestamp(0) without time zone null);
+alter table "articles" add constraint "articles_slug_unique" unique ("slug");
+alter table "articles" add constraint "articles_user_id_foreign" foreign key ("user_id") references "users" ("id") on delete cascade;
+alter table "articles" add constraint "articles_category_id_foreign" foreign key ("category_id") references "categories" ("id") on delete set null;
+create table "tags" ("id" bigserial primary key not null, "name" varchar(255) not null);
+create table "article_tag" ("article_id" bigint not null, "tag_id" bigint not null);
+alter table "article_tag" add primary key ("article_id", "tag_id");
+alter table "article_tag" add constraint "article_tag_article_id_foreign" foreign key ("article_id") references "articles" ("id") on delete cascade;
+alter table "article_tag" add constraint "article_tag_tag_id_foreign" foreign key ("tag_id") references "tags" ("id") on delete cascade;
+create table "failed_jobs" ("id" bigserial primary key not null, "uuid" varchar(255) not null, "connection" text not null, "queue" text not null, "payload" text not null, "exception" text not null, "failed_at" timestamp(0) without time zone not null default CURRENT_TIMESTAMP);
+alter table "failed_jobs" add constraint "failed_jobs_uuid_unique" unique ("uuid");
